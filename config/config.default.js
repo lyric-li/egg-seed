@@ -53,15 +53,24 @@ module.exports = appInfo => {
     agent: false,
   };
 
+  // 异常处理
   config.onerror = {
     all(err, ctx) {
       ctx.logger.error(err);
+      if (err.name === 'ServiceError') {
+        ctx.body = {
+          code: 0,
+          msg: '请求失败',
+          reason: err.errors
+        };
+      } else {
+        ctx.body = {
+          code: -1,
+          msg: '请求异常',
+          reason: err.errors
+        };
+      }
       ctx.status = 200;
-      ctx.body = {
-        code: -1,
-        msg: '请求异常',
-        reason: err.errors
-      };
     }
   }
 
